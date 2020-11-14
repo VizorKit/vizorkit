@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+// forward declarations
+static inline uint8_t recurse_value();
+
 token_t token_get_individual(char * buffer) {
   token_t token = {
     .data = NULL,
@@ -20,6 +23,7 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
   };
   tokens.tokens = malloc(sizeof(token_t) * start_size);
   uint8_t skip = 0;
+  token_t prev  = token_get_individual(" ");
   while(*buffer != '\0') {
     if(tokens.capacity == tokens.size) {
       tokens.capacity = tokens.capacity << 1;
@@ -28,6 +32,11 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
     token_t token = token_get_individual(buffer);
     switch(token.morpheme) {
     case VALUE:
+      buffer++;
+      while(recurse_morpheme())	switch(token_get_individual(buffer).morpheme) {
+	  case V
+	}
+      }
       break;
     case EMPTY:
       buffer++;
