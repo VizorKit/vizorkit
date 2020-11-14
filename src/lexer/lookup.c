@@ -131,6 +131,6 @@ const static enum _morpheme_ lookup[128] = {
     VALUE
 };
 
-morpheme_e morpheme_get(const char c) {
+morpheme_e static inline morpheme_get(const char c) {
     return lookup[(int)c];
 }

@@ -33,10 +33,7 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
     switch(token.morpheme) {
     case VALUE:
       buffer++;
-      while(recurse_morpheme())	switch(token_get_individual(buffer).morpheme) {
-	  case V
-	}
-      }
+      
       break;
     case EMPTY:
       buffer++;
