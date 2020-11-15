@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// forward declarations
-static inline uint8_t recurse_value();
 
 token_t token_get_individual(char * buffer) {
   token_t token = {
@@ -23,14 +21,14 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
   };
   tokens.tokens = malloc(sizeof(token_t) * start_size);
   uint8_t skip = 0;
-  token_t prev  = token_get_individual(" ");
+  token_t prev_t = token_get_individual(" ");
   while(*buffer != '\0') {
     if(tokens.capacity == tokens.size) {
       tokens.capacity = tokens.capacity << 1;
       tokens.tokens = realloc((void*)(&tokens.tokens), tokens.capacity);
     }
-    token_t token = token_get_individual(buffer);
-    switch(token.morpheme) {
+    token_t t  = token_get_individual(buffer);
+    switch(t.morpheme) {
     case VALUE:
       buffer++;
       
@@ -51,16 +49,47 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
       buffer++;
       skip = 1;
       break;
+    case QUOTE:
+      void* ptr = buffer;
+      uint8_t cont = 1;
+      while(*buffer != '\0' && cont) {
+	morpheme_e local_morph = morpheme_get(*buffer);
+	if(local_morph == REF)
+	  {
+	    if(*++buffer != '\'') cont = 0;
+	  }
+	else if(local_morph == QUOTE) cont = 0;
+      }
+      memcpy((void *)(&tokens.tokens[tokens.size]), &t, sizeof(token_t));
+      
+      tokens.size++;      
+      break;
+    case DBLQUOTE:
+      buffer++;
+      break;
     case FORW:
-      skip = 1;
+      buffer++;
+      if(morpheme_get(*buffer == FORW))
+	{
+	  while(*buffer != '\0' && morpheme_get(*buffer) != ENDLINE)
+	    {
+	      buffer++;
+	    }
+	  skip = 1;
+	  t = token_get_individual(" ");
+	}
+      else {
+	buffer--;
+      }
     default:
       buffer++;
       break;
     }
-    if(!skip) {
-      memcpy((void *)(&tokens.tokens[tokens.size]), &token, sizeof(token_t));
+    if(!skip) { 
+      memcpy((void *)(&tokens.tokens[tokens.size]), &t, sizeof(token_t));
       tokens.size++;
     }
+    prev_t = t;
   }
   return tokens;
 }
