@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include "./debug/debug.h"
-#include "./flush/flush.h"
+#include "./lexer/lexer.h"
 
 int main() {
-  flush("cool.bin", (uint8_t *) "hello");
-  debug_print("%s", "usage");
-  return 42;
+  token_l list = token_get_list("Hello",5);
 }

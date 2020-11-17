@@ -45,7 +45,6 @@ typedef struct TokenList {
   uint8_t size;
 } token_l;
 
-morpheme_e morpheme_get(const char c);
 /* incomplete token. no data or length */
 token_t token_get_individual(char * buffer);
 
