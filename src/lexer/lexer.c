@@ -28,7 +28,7 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
   while(*buffer != '\0') {
     if(tokens.capacity <= tokens.size + 3) {
       tokens.capacity = tokens.capacity << 1;
-      tokens.tokens = realloc((void*)(tokens.tokens), tokens.capacity);
+      tokens.tokens = realloc((void*)(tokens.tokens), tokens.capacity * sizeof(token_t));
     }
     token_t t  = token_get_individual(buffer);
     switch(t.morpheme) {
@@ -142,11 +142,13 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
       }
     }
     if(!skip) {
+      debug_print("%s\n", "adding token");
       memcpy((void *)(&tokens.tokens[tokens.size]), &t, sizeof(token_t));
       tokens.size++;
     }
     prev_t = t;
   }
+  debug_print("%s\n", "return tokens");
   return tokens;
 }
 

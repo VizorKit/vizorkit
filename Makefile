@@ -1,6 +1,6 @@
 # Variables
-CC = clang
-CFLAGS = -target x86_64-pc-windows-gnu -Wall -O0 -std=c11 -DDEBUG -g
+CC = gcc
+CFLAGS = -Wall -O0 -std=c11 -DDEBUG -g
 ODUMP = objdump
 ODFLAGS = -d
 OBJCOPY = objcopy
