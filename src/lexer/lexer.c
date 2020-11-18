@@ -6,16 +6,18 @@
 
 // forwards
 morpheme_e const static lookup[128];
-
-token_t token_get_individual(char * buffer) {
+token_t static inline token_create(char * data, uint8_t length, morpheme_e morpheme) {
   token_t token = {
-    .data = NULL,
-    .length = 0,
-    .morpheme = lookup[(int)*buffer]
+    .data = data,
+    .length = length,
+    .morpheme = morpheme
   };
   return token;
 }
-
+void static inline token_l_add(token_l * tokens, token_t * token) {
+  	memcpy((void *)(&tokens->tokens[tokens->size]), token, sizeof(token_t));
+	tokens->size++;
+}
 token_l token_get_list(char * buffer, uint8_t start_size) {
   token_l tokens = {
     .size = 0,
@@ -23,15 +25,13 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
     .capacity = start_size
   };
   tokens.tokens = malloc(sizeof(token_t) * start_size);
-
-  uint8_t skip = 0;
   while(*buffer != '\0') {
     if(tokens.capacity <= tokens.size + 3) {
       tokens.capacity = tokens.capacity << 1;
       tokens.tokens = realloc((void*)(tokens.tokens), tokens.capacity * sizeof(token_t));
     }
-    token_t t  = token_get_individual(buffer);
-    switch(t.morpheme) {
+    morpheme_e morph = lookup[(int)*buffer];
+    switch(morph) {
     case VALUE:
       {
 	char * start = buffer;
@@ -46,35 +46,24 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
 	      buffer++;
 	    }
 	  }
-	t.data = buffer;
-	t.length = buffer - start;
-	memcpy((void *)(&tokens.tokens[tokens.size]), &t, sizeof(token_t));
-	tokens.size++;
-	skip = 1;
+	token_t t = token_create(buffer, buffer - start, VALUE);
+	token_l_add(&tokens, &t);
 	break;
       }
     case EMPTY:
       {
-	buffer++;
-	skip = 1;
 	break;
       }
     case ENDLINE:
       {
-	buffer++;
-	skip = 1;
 	break;
       }
     case TAB:
       {
-	buffer++;
-	skip = 1;
 	break;
       }
     case SPACE:
       {
-	buffer++;
-	skip = 1;
 	break;
       }
     case QUOTE:
@@ -90,20 +79,16 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
 	  else if(local_morph == QUOTE) cont = 0;
 	  buffer++;
 	}
-	memcpy((void *)(&tokens.tokens[tokens.size]), &t, sizeof(token_t));
-	tokens.size++;
+	token_t start_t = token_create(NULL,0,QUOTE);
+	token_l_add(&tokens, &start_t);
 	if(start <= --buffer)
 	  {
-	    token_t value = token_get_individual("a");
-	    value.data = buffer;
-	    value.length = buffer - start;
-	    memcpy((void *)(&tokens.tokens[tokens.size]), &value, sizeof(token_t));
-	    tokens.size++;
-	    token_t end = token_get_individual("'");
-	    memcpy((void *)(&tokens.tokens[tokens.size]), &end, sizeof(token_t));
-	    tokens.size++;
+	    token_t t = token_create(buffer, buffer - start, VALUE);
+	    token_l_add(&tokens, &t);
+
+	    token_t end_t = token_create(NULL, 0, QUOTE);
+	    token_l_add(&tokens, &end_t);
 	  }
-	skip = 1;
 	break;
       }
     case DBLQUOTE:
@@ -119,33 +104,27 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
 	  else if(local_morph == DBLQUOTE) cont = 0;
 	  buffer++;
 	}
-	memcpy((void *)(&tokens.tokens[tokens.size]), &t, sizeof(token_t));
-	tokens.size++;
+	token_t start_t = token_create(NULL,0,DBLQUOTE);
+	token_l_add(&tokens, &start_t);
 	if(start <= --buffer)
 	  {
-	    token_t value = token_get_individual("a");
-	    value.data = buffer;
-	    value.length = buffer - start;
-	    memcpy((void *)(&tokens.tokens[tokens.size]), &value, sizeof(token_t));
-	    tokens.size++;
-	    token_t end = token_get_individual("'");
-	    memcpy((void *)(&tokens.tokens[tokens.size]), &end, sizeof(token_t));
-	    tokens.size++;
+	    token_t t = token_create(buffer, buffer - start, VALUE);
+	    token_l_add(&tokens, &t);
+
+	    token_t end_t = token_create(NULL, 0, DBLQUOTE);
+	    token_l_add(&tokens, &end_t);
 	  }
-	skip = 1;
 	break;
       }
     case FORW:
       {
 	buffer++;
-	if(lookup[(int)(*buffer)] == FORW)
+	if(*buffer != '\0' && lookup[(int)(*buffer)] == FORW)
 	  {
 	    while(*buffer != '\0' && lookup[(int)(*buffer)] != ENDLINE)
 	      {
 		buffer++;
 	      }
-	    skip = 1;
-	    t = token_get_individual(" ");
 	  }
 	else {
 	  buffer--;
@@ -153,13 +132,10 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
       }
     default:
       {
-	buffer++;
+	token_t t = token_create(NULL, 0, morph);
+	token_l_add(&tokens, &t);
 	break;
       }
-    }
-    if(!skip) {
-      memcpy((void *)(&tokens.tokens[tokens.size]), &t, sizeof(token_t));
-      tokens.size++;
     }
   }
   return tokens;
