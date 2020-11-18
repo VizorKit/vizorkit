@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../debug/debug.h"
+
 // forwards
 morpheme_e const static lookup[128];
 
@@ -24,7 +25,6 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
   tokens.tokens = malloc(sizeof(token_t) * start_size);
 
   uint8_t skip = 0;
-  token_t prev_t = token_get_individual(" ");
   while(*buffer != '\0') {
     if(tokens.capacity <= tokens.size + 3) {
       tokens.capacity = tokens.capacity << 1;
@@ -34,7 +34,23 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
     switch(t.morpheme) {
     case VALUE:
       {
-	buffer++;
+	char * start = buffer;
+	uint8_t cont = 1;
+	while(*buffer != '\0' && cont)
+	  {
+	    if(lookup[(int)*buffer] != VALUE) {
+	      --buffer;
+              cont = 0;
+	    }
+	    else {
+	      buffer++;
+	    }
+	  }
+	t.data = buffer;
+	t.length = buffer - start;
+	memcpy((void *)(&tokens.tokens[tokens.size]), &t, sizeof(token_t));
+	tokens.size++;
+	skip = 1;
 	break;
       }
     case EMPTY:
@@ -52,14 +68,14 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
     case TAB:
       {
 	buffer++;
-      skip = 1;
-      break;
+	skip = 1;
+	break;
       }
     case SPACE:
       {
 	buffer++;
-      skip = 1;
-      break;
+	skip = 1;
+	break;
       }
     case QUOTE:
       {
@@ -100,7 +116,7 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
 	    {
 	      if(*++buffer != '\"') cont = 0;
 	    }
-	  else if(local_morph == QUOTE) cont = 0;
+	  else if(local_morph == DBLQUOTE) cont = 0;
 	  buffer++;
 	}
 	memcpy((void *)(&tokens.tokens[tokens.size]), &t, sizeof(token_t));
@@ -137,18 +153,15 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
       }
     default:
       {
-      buffer++;
-      break;
+	buffer++;
+	break;
       }
     }
     if(!skip) {
-      debug_print("%s\n", "adding token");
       memcpy((void *)(&tokens.tokens[tokens.size]), &t, sizeof(token_t));
       tokens.size++;
     }
-    prev_t = t;
   }
-  debug_print("%s\n", "return tokens");
   return tokens;
 }
 

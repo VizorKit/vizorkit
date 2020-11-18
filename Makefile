@@ -5,7 +5,7 @@ ODUMP = objdump
 ODFLAGS = -d
 OBJCOPY = objcopy
 OBJFLAGS = -O binary
-MKDIRARGS = -p
+MKDIRARGS = --parents
 
 # Directories
 OBJDIR := obj
