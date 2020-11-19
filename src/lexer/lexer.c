@@ -6,6 +6,7 @@
 
 // forwards
 morpheme_e const static lookup[128];
+
 token_t static inline token_create(char * data, uint8_t length, morpheme_e morpheme) {
   token_t token = {
     .data = data,
@@ -14,6 +15,7 @@ token_t static inline token_create(char * data, uint8_t length, morpheme_e morph
   };
   return token;
 }
+
 void static inline token_l_add(token_l * tokens, token_t * token) {
   	memcpy((void *)(&tokens->tokens[tokens->size]), token, sizeof(token_t));
 	tokens->size++;
@@ -38,15 +40,16 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
 	uint8_t cont = 1;
 	while(*buffer != '\0' && cont)
 	  {
+	    
+	    // TOPIC:: for the end of every value, it is iterated again.
 	    if(lookup[(int)*buffer] != VALUE) {
-	      --buffer;
               cont = 0;
 	    }
 	    else {
 	      buffer++;
 	    }
 	  }
-	token_t t = token_create(buffer, buffer - start, VALUE);
+	token_t t = token_create(start, buffer - start, VALUE);
 	token_l_add(&tokens, &t);
 	break;
       }
@@ -83,7 +86,7 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
 	token_l_add(&tokens, &start_t);
 	if(start <= --buffer)
 	  {
-	    token_t t = token_create(buffer, buffer - start, VALUE);
+	    token_t t = token_create(start, buffer - start, VALUE);
 	    token_l_add(&tokens, &t);
 
 	    token_t end_t = token_create(NULL, 0, QUOTE);
@@ -108,7 +111,7 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
 	token_l_add(&tokens, &start_t);
 	if(start <= --buffer)
 	  {
-	    token_t t = token_create(buffer, buffer - start, VALUE);
+	    token_t t = token_create(start, buffer - start, VALUE);
 	    token_l_add(&tokens, &t);
 
 	    token_t end_t = token_create(NULL, 0, DBLQUOTE);
@@ -137,6 +140,7 @@ token_l token_get_list(char * buffer, uint8_t start_size) {
 	break;
       }
     }
+    buffer++;
   }
   return tokens;
 }
