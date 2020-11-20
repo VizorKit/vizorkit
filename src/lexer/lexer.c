@@ -31,21 +31,14 @@ token_l token_get_list(char *buffer, uint8_t start_size) {
       {
       case VALUE:
 	{
-	  char *start = buffer++;
+	  char *start = buffer;
 	  uint8_t cont = 1;
-	  while (*buffer != '\0' && cont) {
-	    // TOPIC:: for the end of every value, it is iterated again.
-	    if (lookup[(int)*buffer] != VALUE) {
-	      buffer--;
-	      cont = 0;
-	    } else {
-	      buffer++;
-	    }
+	  while (*++buffer != '\0' && cont) {
+	    if (lookup[(int)*buffer] != VALUE) cont = 0;
 	  }
 	  token_t t = token_create(start, buffer - start, VALUE);
-	  debug_print("%s", "adding token\n");
 	  token_l_add(&tokens, &t);
-	  break;
+          break;
 	}
       case EMPTY:
 	{

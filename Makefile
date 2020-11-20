@@ -43,16 +43,13 @@ $(TGTDIR)/$(target) : $(objects)
 # Test rules.
 # TODO:: get the recipe to fail on failed test.
 test: $(tests_list)
-	@echo "test list"
 	@$(foreach f,$^,./$(f);)
 
 $(OBJDIR)/%.exe: $(TSTDIR)/%.c $(objects)
-	@echo "tests to obj link"
 	$(CC) $(CFLAGS) -o $@ $< $(filter-out $(@D)/main.o,$(objects))
 
 # Shared build rules.
 $(OBJDIR)/%.o: $(SRCDIR)/%.c | folders
-	@echo "shared files build"
 	@mkdir $(MKDIRARGS) $(@D)
 	@$(CC) $(CFLAGS) -c -o $@ $<
 

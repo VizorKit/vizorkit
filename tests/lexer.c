@@ -16,14 +16,14 @@ int main() {
   test_separator();
   test_comment();
   test_value();
-  //test_multi();
+  test_multi();
   return 0;
 }
 
 void test_multi() {
-  // length should be 15
+  debug_print("test => %s\n", "multi");
   char * buffer = "const val";
-  uint8_t size = 3;
+  uint8_t size = 2;
   token_l l = token_get_list(buffer, 5);
   assert(l.size == size);
   assert(l.tokens[0].morpheme == VALUE);
@@ -32,6 +32,7 @@ void test_multi() {
 }
 
 void test_value() {
+  debug_print("test => %s\n", "value");
   char * buffer = "test_value";
   uint8_t length = 10;
   token_l l = token_get_list(buffer, 4);
@@ -41,18 +42,21 @@ void test_value() {
 }
 
 void test_comment() {
+  debug_print("test => %s\n", "comment");
   char * buffer = "// this is a comment.\n";
   token_l l = token_get_list(buffer, 4);
   assert(l.size == 1);
 }
 
 void test_separator() {
+  debug_print("test => %s\n", "separator");
   char * buffer = " \t\n";
   token_l l = token_get_list(buffer, 7);
   assert(l.size == 0);
 }
 
 void test_endline() {
+  debug_print("test => %s\n", "endline");
   char * buffer = "\n";
   token_l l = token_get_list(buffer, 4);
   assert(l.size == 0);
