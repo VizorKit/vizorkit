@@ -62,9 +62,19 @@ token_l token_get_list(char *buffer, uint8_t start_size) {
 	}
       case QUOTE:
 	{
+	  token_t t = token_create(NULL, 0, QUOTE);
+	  token_l_add(&tokens, &t);
+
 	  char *start = ++buffer;
 	  uint8_t cont = 1;
-	  while (*buffer != '\0' && cont) {
+	  while (*buffer++ != '\0' && cont) {
+	    if (lookup[(int)*buffer] == REF) {
+	      if()
+	    
+            }
+	  token_t t = token_create(start, buffer - start, VALUE);
+	  token_l_add(&tokens, &t);
+
 	    morpheme_e local_morph = lookup[(int)(*buffer)];
 	    if (local_morph == REF) {
 	      if (*++buffer != '\'')

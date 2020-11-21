@@ -9,9 +9,12 @@ void test_value();
 void test_comment();
 void test_separator();
 void test_endline();
-
+void test_quote();
+void test_dbl_quote();
 
 int main() {
+  test_quote();
+  test_dbl_quote();
   test_endline();
   test_separator();
   test_comment();
@@ -60,4 +63,24 @@ void test_endline() {
   char * buffer = "\n";
   token_l l = token_get_list(buffer, 4);
   assert(l.size == 0);
+}
+
+void test_quote() {
+  debug_print("test => %s\n", "quote");
+  char * buffer = "'this is a ;&test'";
+  token_l l = token_get_list(buffer, 6);
+  assert(l.size == 3);
+  assert(l.tokens[0].morpheme == QUOTE);
+  assert(l.tokens[1].morpheme == VALUE);
+  assert(l.tokens[2].morpheme == QUOTE);
+}
+
+void test_dbl_quote() {
+  debug_print("test => %s\n", "dblquote");
+  char * buffer = "\"this is a ;&test\"";
+  token_l l = token_get_list(buffer, 6);
+  assert(l.size == 3);
+  assert(l.tokens[0].morpheme == DBLQUOTE);
+  assert(l.tokens[1].morpheme == VALUE);
+  assert(l.tokens[2].morpheme == DBLQUOTE);
 }
