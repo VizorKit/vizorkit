@@ -67,55 +67,39 @@ token_l token_get_list(char *buffer, uint8_t start_size) {
 
 	  char *start = ++buffer;
 	  uint8_t cont = 1;
-	  while (*buffer++ != '\0' && cont) {
-	    if (lookup[(int)*buffer] == REF) {
-	      if()
-	    
-            }
-	  token_t t = token_create(start, buffer - start, VALUE);
-	  token_l_add(&tokens, &t);
-
-	    morpheme_e local_morph = lookup[(int)(*buffer)];
-	    if (local_morph == REF) {
-	      if (*++buffer != '\'')
-		cont = 0;
-	    } else if (local_morph == QUOTE)
-	      cont = 0;
-	    buffer++;
+	  while ( cont && *++buffer != '\0') {
+	    if(lookup[(int)*buffer] == QUOTE) cont = 0;
 	  }
-	  token_t start_t = token_create(NULL, 0, QUOTE);
-	  token_l_add(&tokens, &start_t);
-	  if (start <= --buffer) {
-	    token_t t = token_create(start, buffer - start, VALUE);
-	    token_l_add(&tokens, &t);
+	  token_t middle_t = token_create(start, buffer - start, VALUE);
+	  token_l_add(&tokens, &middle_t);
 
+	  if(*buffer != '\0') {
 	    token_t end_t = token_create(NULL, 0, QUOTE);
 	    token_l_add(&tokens, &end_t);
+	    buffer++;
 	  }
 	  break;
 	}
       case DBLQUOTE:
 	{
+	  token_t t = token_create(NULL, 0, DBLQUOTE);
+	  token_l_add(&tokens, &t);
+
 	  char *start = ++buffer;
 	  uint8_t cont = 1;
-	  while (*buffer != '\0' && cont) {
-	    morpheme_e local_morph = lookup[(int)(*buffer)];
-	    if (local_morph == REF) {
-	      if (*++buffer != '\"')
-		cont = 0;
-	    } else if (local_morph == DBLQUOTE)
-	      cont = 0;
-	    buffer++;
+	  while (cont && *++buffer != '\0') { 
+	    if(lookup[(int)*buffer] == DBLQUOTE) cont = 0;
 	  }
-	  token_t start_t = token_create(NULL, 0, DBLQUOTE);
-	  token_l_add(&tokens, &start_t);
-	  if (start <= --buffer) {
-	    token_t t = token_create(start, buffer - start, VALUE);
-	    token_l_add(&tokens, &t);
 
+	  token_t middle_t = token_create(start, buffer - start, VALUE);
+	  token_l_add(&tokens, &middle_t);
+
+	  if(*buffer != '\0') {
 	    token_t end_t = token_create(NULL, 0, DBLQUOTE);
 	    token_l_add(&tokens, &end_t);
+	    buffer++;
 	  }
+
 	  break;
 	}
       case FORW:
@@ -125,9 +109,8 @@ token_l token_get_list(char *buffer, uint8_t start_size) {
 	    while (*buffer != '\0' && lookup[(int)(*buffer)] != ENDLINE) {
 	      buffer++;
 	    }
-	  } else {
-	    buffer--;
 	  }
+	  break;
 	}
       default:
 	{

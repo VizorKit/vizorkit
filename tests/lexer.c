@@ -48,7 +48,7 @@ void test_comment() {
   debug_print("test => %s\n", "comment");
   char * buffer = "// this is a comment.\n";
   token_l l = token_get_list(buffer, 4);
-  assert(l.size == 1);
+  assert(l.size == 0);
 }
 
 void test_separator() {
