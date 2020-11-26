@@ -1,6 +1,8 @@
 #include <assert.h>
+#include <limits.h>
 #include <stdint.h>
 #include <string.h>
+#include <time.h>
 #include "../src/lexer/lexer.h"
 #include "../src/debug/debug.h"
 
@@ -11,8 +13,12 @@ void test_separator();
 void test_endline();
 void test_quote();
 void test_dbl_quote();
+void test_equal();
 
 int main() {
+  clock_t start,end;
+  double time_taken;
+  start = clock();
   test_quote();
   test_dbl_quote();
   test_endline();
@@ -20,18 +26,23 @@ int main() {
   test_comment();
   test_value();
   test_multi();
+  test_equal();
+  end = clock();
+  time_taken = ((double) (end - start)) / CLOCKS_PER_SEC;
+  debug_print("time taken := %f\n", time_taken);
   return 0;
 }
 
 void test_multi() {
   debug_print("test => %s\n", "multi");
-  char * buffer = "const val";
-  uint8_t size = 2;
+  char * buffer = "const val;\n:";
+  uint8_t size = 4;
   token_l l = token_get_list(buffer, 5);
   assert(l.size == size);
   assert(l.tokens[0].morpheme == VALUE);
   assert(l.tokens[1].morpheme == VALUE);
-
+  assert(l.tokens[2].morpheme == SEMICOLON);
+  assert(l.tokens[3].morpheme == COLON);
 }
 
 void test_value() {
@@ -83,4 +94,13 @@ void test_dbl_quote() {
   assert(l.tokens[0].morpheme == DBLQUOTE);
   assert(l.tokens[1].morpheme == VALUE);
   assert(l.tokens[2].morpheme == DBLQUOTE);
+}
+
+void test_equal() {
+  debug_print("test => %s\n", "equal");
+  char * buffer = "=";
+  uint8_t size = 1;
+  token_l l = token_get_list(buffer, 4);
+  assert(l.size == size);
+  assert(l.tokens[0].morpheme == EQ);
 }

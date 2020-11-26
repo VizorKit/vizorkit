@@ -33,7 +33,7 @@ token_l token_get_list(char *buffer, uint8_t start_size) {
 	{
 	  char *start = buffer;
 	  uint8_t cont = 1;
-	  while (*++buffer != '\0' && cont) {
+	  while (cont && *++buffer != '\0') {
 	    if (lookup[(int)*buffer] != VALUE) cont = 0;
 	  }
 	  token_t t = token_create(start, buffer - start, VALUE);
