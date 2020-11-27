@@ -1,6 +1,6 @@
 #pragma once
-
 #include <stdint.h>
+
 typedef enum __attribute__ ((__packed__)) _morpheme_ {
   VALUE,
   EMPTY,     // beginning asciis / Invalid
