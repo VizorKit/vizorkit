@@ -7,7 +7,7 @@
 // forwards
 morpheme_e const static lookup[128];
 
-token_t static inline token_create(char *data, uint8_t length,
+token_t static inline token_create(char *data, ushort_t length,
                                    morpheme_e morpheme) {
   token_t token = {.data = data, .length = length, .morpheme = morpheme};
   return token;
@@ -17,7 +17,7 @@ void static inline token_l_add(token_l *tokens, token_t *token) {
   memcpy((void *)(&tokens->tokens[tokens->size]), token, sizeof(token_t));
   tokens->size++;
 }
-token_l token_get_list(char *buffer, uint8_t start_size) {
+token_l token_get_list(char *buffer, ushort_t start_size) {
   token_l tokens = {.size = 0, .tokens = NULL, .capacity = start_size};
   tokens.tokens = malloc(sizeof(token_t) * start_size);
   while (*buffer != '\0') {
@@ -26,15 +26,15 @@ token_l token_get_list(char *buffer, uint8_t start_size) {
       tokens.tokens =
 	realloc((void *)(tokens.tokens), tokens.capacity * sizeof(token_t));
     }
-    morpheme_e morph = lookup[(int)*buffer];
+    morpheme_e morph = lookup[(ubyte_t)*buffer];
     switch (morph)
       {
       case VALUE:
 	{
 	  char *start = buffer;
-	  uint8_t cont = 1;
+	  ushort_t cont = 1;
 	  while (cont && *++buffer != '\0') {
-	    if (lookup[(int)*buffer] != VALUE) cont = 0;
+	    if (lookup[(ubyte_t)*buffer] != VALUE) cont = 0;
 	  }
 	  token_t t = token_create(start, buffer - start, VALUE);
 	  token_l_add(&tokens, &t);
@@ -66,9 +66,9 @@ token_l token_get_list(char *buffer, uint8_t start_size) {
 	  token_l_add(&tokens, &t);
 
 	  char *start = ++buffer;
-	  uint8_t cont = 1;
+	  ushort_t cont = 1;
 	  while ( cont && *++buffer != '\0') {
-	    if(lookup[(int)*buffer] == QUOTE) cont = 0;
+	    if(lookup[(ubyte_t)*buffer] == QUOTE) cont = 0;
 	  }
 	  token_t middle_t = token_create(start, buffer - start, VALUE);
 	  token_l_add(&tokens, &middle_t);
@@ -86,9 +86,9 @@ token_l token_get_list(char *buffer, uint8_t start_size) {
 	  token_l_add(&tokens, &t);
 
 	  char *start = ++buffer;
-	  uint8_t cont = 1;
+	  ushort_t cont = 1;
 	  while (cont && *++buffer != '\0') { 
-	    if(lookup[(int)*buffer] == DBLQUOTE) cont = 0;
+	    if(lookup[(ubyte_t)*buffer] == DBLQUOTE) cont = 0;
 	  }
 
 	  token_t middle_t = token_create(start, buffer - start, VALUE);
@@ -105,8 +105,8 @@ token_l token_get_list(char *buffer, uint8_t start_size) {
       case FORW:
 	{
 	  buffer++;
-	  if (*buffer != '\0' && lookup[(int)(*buffer)] == FORW) {
-	    while (*buffer != '\0' && lookup[(int)(*buffer)] != ENDLINE) {
+	  if (*buffer != '\0' && lookup[(ubyte_t)(*buffer)] == FORW) {
+	    while (*buffer != '\0' && lookup[(ubyte_t)(*buffer)] != ENDLINE) {
 	      buffer++;
 	    }
 	  }

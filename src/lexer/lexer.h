@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include "../utils/utils.h"
 
 typedef enum __attribute__ ((__packed__)) _morpheme_ {
   VALUE,
@@ -40,20 +41,20 @@ typedef struct Token {
   // null if root morpheme
   char * data;
   // 0 if root morpheme
-  uint8_t length; 
+  ushort_t length; 
   morpheme_e morpheme;
 } token_t;
 
 typedef struct TokenList {
   token_t * tokens;
-  uint8_t capacity;
-  uint8_t size;
+  ushort_t capacity;
+  ushort_t size;
 } token_l;
 
 /* incomplete token. no data or length */
 token_t token_get_individual(char * buffer);
 
-token_l token_get_list(char * buffer, uint8_t start_size);
+token_l token_get_list(char * buffer, ushort_t start_size);
 
 void token_list_free(token_l list);
 
