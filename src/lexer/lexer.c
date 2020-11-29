@@ -17,7 +17,7 @@ void static inline token_l_add(token_l *tokens, token_t *token) {
   memcpy((void *)(&tokens->tokens[tokens->size]), token, sizeof(token_t));
   tokens->size++;
 }
-token_l token_get_list(char *buffer, ushort_t start_size) {
+token_l token_get_list(char *buffer, ubyte_t start_size) {
   token_l tokens = {.size = 0, .tokens = NULL, .capacity = start_size};
   tokens.tokens = malloc(sizeof(token_t) * start_size);
   while (*buffer != '\0') {
