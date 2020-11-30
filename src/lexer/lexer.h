@@ -55,6 +55,6 @@ token_t token_get_individual(char * buffer);
 
 token_l token_get_list(char * buffer, ubyte_t start_size);
 
-void token_list_free(token_l list);
+void token_list_free(token_l *list);
 
 

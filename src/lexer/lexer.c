@@ -123,7 +123,7 @@ token_l token_get_list(char *buffer, ubyte_t start_size) {
   return tokens;
 }
 
-void token_list_free(token_l list) { free(list.tokens); }
+void token_list_free(token_l *list) { free(list->tokens); }
 
 const static morpheme_e lookup[128] = {
   EMPTY,
