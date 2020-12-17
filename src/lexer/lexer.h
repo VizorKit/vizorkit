@@ -46,14 +46,14 @@ typedef struct Token {
 
 typedef struct TokenList {
   token_t * tokens;
-  ushort_t capacity;
-  ushort_t size;
+  uint32_t capacity;
+  uint32_t size;
 } token_l;
 
 /* incomplete token. no data or length */
 token_t token_get_individual(char * buffer);
 
-token_l token_get_list(char * buffer, ubyte_t start_size);
+token_l token_get_list(char * buffer, uint32_t start_capacity);
 
 void token_list_free(token_l *list);
 

@@ -39,6 +39,7 @@ run: $(TGTDIR)/$(target)
 
 $(TGTDIR)/$(target) : $(objects)
 	$(CC) $(CFLAGS) $^ -o $@
+	$@
 
 # Test rules.
 # TODO:: get the recipe to fail on failed test.
